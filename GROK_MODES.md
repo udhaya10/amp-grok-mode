@@ -1,6 +1,11 @@
-# Grok Mode (Single Clean Mode + Global Firecrawl)
+# Grok Mode + Global Firecrawl Hook
 
-This repository contains **one single Grok agent mode**, directly modeled on the official `@amp/glm-52-mode`, plus a global Firecrawl hook.
+This repository contains **two separate plugins**:
+
+| File               | Purpose |
+|--------------------|---------|
+| `grok-mode.ts`     | Single clean Grok agent mode (modeled on official `@amp/glm-52-mode`) |
+| `firecrawl-hook.ts`| Global transparent Firecrawl hook (affects **entire Amp**) |
 
 ## The Mode
 
@@ -8,21 +13,26 @@ This repository contains **one single Grok agent mode**, directly modeled on the
 |------|-------|-----------|-------------|
 | `grok` | `xai/grok-build-0.1` | `medium` | Single clean Grok mode |
 
-## Firecrawl (Global Hook)
+## Firecrawl (Global Transparent Hook)
 
-This plugin registers a global `tool.call` listener that intercepts:
+`firecrawl-hook.ts` uses `amp.on('tool.call', ...)` + `synthesize` so the replacement is invisible:
 
-- `web_search` → Firecrawl search (with optional scrape)
-- `read_web_page` → Firecrawl scrape
+- `web_search` → Firecrawl `search` (optionally with scrape)
+- `read_web_page` → Firecrawl `scrape`
 
-This affects **every** agent in Amp, not just `--mode grok`.
+This is a **drop-in global override**:
+- Works for Grok, GLM, built-in modes, **and all subagents**
+- Original Amp web tools never run
+- The model has no idea it is using Firecrawl
 
-Additional tools are also registered (visible to agents that list them):
+Extra additive tools (use explicitly when needed):
 
 - `firecrawl_map`
 - `firecrawl_crawl`
 - `firecrawl_agent`
 - `firecrawl_browser`
+
+Requires the `firecrawl` CLI installed and authenticated (`firecrawl --status`).
 
 ## Usage
 
@@ -39,37 +49,41 @@ amp --mode grok --effort high
 
 ## Installation
 
-### System-wide
+### Both plugins (recommended)
 
 ```bash
+# Grok mode
 curl -fsSL https://raw.githubusercontent.com/udhaya10/amp-grok-mode/main/grok-mode.ts \
   -o ~/.config/amp/plugins/grok-mode.ts
+
+# Global Firecrawl hook (affects everything)
+curl -fsSL https://raw.githubusercontent.com/udhaya10/amp-grok-mode/main/firecrawl-hook.ts \
+  -o ~/.config/amp/plugins/firecrawl-hook.ts
+
+amp plugins reload
 ```
 
-Then reload plugins.
+### Grok mode only (no Firecrawl replacement)
+
+Just install `grok-mode.ts` above.
 
 ### Project-scoped
 
 ```bash
 mkdir -p .amp/plugins
-curl -fsSL https://raw.githubusercontent.com/udhaya10/amp-grok-mode/main/grok-mode.ts \
-  -o .amp/plugins/grok-mode.ts
-git add .amp/plugins/grok-mode.ts
+curl -fsSL .../grok-mode.ts -o .amp/plugins/grok-mode.ts
+curl -fsSL .../firecrawl-hook.ts -o .amp/plugins/firecrawl-hook.ts
+git add .amp/plugins/*.ts
 ```
 
 ## Cleanup (Recommended)
-
-If you previously had many Grok variants, remove all of them:
 
 ```bash
 rm -f ~/.config/amp/plugins/grok-*.ts ~/.config/amp/plugins/grok*.ts 2>/dev/null || true
 amp plugins reload
 ```
 
-Keep only:
-
-- `glm-52-mode.ts` (official)
-- `grok-mode.ts` (this version)
+Keep only the official GLM + the two files from this repo.
 
 ## License
 
