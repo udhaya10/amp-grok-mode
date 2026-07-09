@@ -1,8 +1,8 @@
 // @amp-plugin updated automatically from https://raw.githubusercontent.com/udhaya10/amp-grok-mode/main/grok-mode.ts
 // @amp-agent-mode {"key":"grok","label":"Grok"}
 
-// Clean single Grok mode, modeled directly on the official @amp/glm-52-mode.
-// One mode only. No family of profiles.
+// Grok thorough mode (enhanced), modeled on official GLM style.
+// Companion crisp mode: grok-rush.ts (rush-classic principles).
 // 
 // NOTE: For transparent Firecrawl replacement of web_search + read_web_page (and extra tools),
 //       also install firecrawl-hook.ts from the same repo. The hook is global and affects
@@ -162,7 +162,7 @@ export default function(amp: PluginAPI) {
 
 	const agent = amp.experimental.createAgent({
 		name: 'grok',
-		model: 'xai/grok-build-0.1',
+		model: 'xai/grok-4.5',
 		instructions: GROK_AGENT_PROMPT,
 		tools: SMART_TOOL_NAMES,
 		reasoningEffort: 'medium',
@@ -172,7 +172,7 @@ export default function(amp: PluginAPI) {
 	amp.experimental.registerAgentMode({
 		key: 'grok',
 		label: 'Grok',
-		description: 'Grok Build 0.1 agent mode. Benefits from global Firecrawl hook (web_search + read_web_page) and extra tools when firecrawl-hook.ts is also installed.',
+		description: 'Grok 4.5 agent mode (via xai/grok-4.5). Benefits from global Firecrawl hook (web_search + read_web_page) and extra tools when firecrawl-hook.ts is also installed.',
 		color: '#ea580c',
 		agent: agent.definition,
 	})

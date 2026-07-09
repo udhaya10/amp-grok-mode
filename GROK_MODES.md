@@ -1,17 +1,34 @@
-# Grok Mode + Global Firecrawl Hook
+# Grok Modes + Global Firecrawl Hook
 
-This repository contains **two separate plugins**:
+This repository contains **two Grok plugins** + one global hook:
 
 | File               | Purpose |
 |--------------------|---------|
-| `grok-mode.ts`     | Single clean Grok agent mode (modeled on official `@amp/glm-52-mode`) |
-| `firecrawl-hook.ts`| Global transparent Firecrawl hook (affects **entire Amp**) |
+| `grok-mode.ts`     | Thorough Grok mode (`grok`) — senior-engineer behavior |
+| `grok-rush.ts`     | Crisp low-latency Grok mode (`grok-rush`) — faithful adaptation of official rush-classic |
+| `firecrawl-hook.ts`| Global transparent Firecrawl hook (affects **entire Amp**, including both modes) |
 
-## The Mode
+## The Two Modes (your dial inside Grok family)
 
-| Mode | Model | Reasoning | Description |
-|------|-------|-----------|-------------|
-| `grok` | `xai/grok-build-0.1` | `medium` | Single clean Grok mode |
+| Mode        | Model            | Reasoning | Style                          | When to use |
+|-------------|------------------|-----------|--------------------------------|-------------|
+| `grok`      | `xai/grok-4.5`   | `medium`  | Thorough / enhanced            | Ambiguous tasks, research, careful changes, UI craft, when you want senior-engineer thoroughness |
+| `grok-rush` | `xai/grok-build-0.1` | `none` | Super crisp, minimal loops     | Small well-defined edits, quick questions, low latency, "just do the smallest correct thing" |
+
+Both still benefit from the global Firecrawl hook.
+
+## Why two Grok modes?
+
+The main `grok` prompt is intentionally **enhanced/thorough** (it has `frame_the_task`, `plan_before_acting`, `codebase_discovery`, full `frontend_taste`, etc.). That's why it sometimes reads many files and makes many tool calls.
+
+`grok-rush` follows the official rush-classic principles almost verbatim:
+- One focused discovery loop
+- Stop as soon as you can name the files/symbols + narrow check
+- Narrowest useful verification
+- Smallest correct diff, no unrelated work
+- Terse communication
+
+This gives you the control you asked for while staying 100% inside Grok models.
 
 ## Firecrawl (Global Transparent Hook)
 
@@ -37,14 +54,15 @@ Requires the `firecrawl` CLI installed and authenticated (`firecrawl --status`).
 ## Usage
 
 ```bash
-amp --mode grok
+amp --mode grok          # thorough (4.5 + medium)
+amp --mode grok-rush     # crisp (build-0.1 + none)
 ```
 
-Override effort if needed:
+You can still override effort on either:
 
 ```bash
 amp --mode grok --effort low
-amp --mode grok --effort high
+amp --mode grok-rush --effort low   # (usually not needed)
 ```
 
 ## Installation

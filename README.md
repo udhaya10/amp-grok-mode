@@ -1,24 +1,35 @@
 # amp-grok-mode
 
-Single clean Grok agent mode for Amp, modeled directly on the official `@amp/glm-52-mode`.
+Two Grok agent modes for Amp + a global Firecrawl hook.
+
+Gives you a real "dial" inside the Grok family:
+- `grok` — thorough / enhanced (like the senior-engineer style)
+- `grok-rush` — super crisp, low-latency (faithful adaptation of official rush-classic)
 
 Also provides a **separate global Firecrawl hook** that transparently replaces Amp's built-in web tools everywhere.
 
-## Two plugins in this repo
+## Plugins in this repo
 
-| File               | Purpose                                                                 |
-|--------------------|-------------------------------------------------------------------------|
-| `grok-mode.ts`     | Defines the single `grok` agent mode (clean prompt + tool list)         |
-| `firecrawl-hook.ts`| Global `tool.call` hook + extra Firecrawl tools (affects **entire Amp**) |
+| File               | Purpose |
+|--------------------|---------|
+| `grok-mode.ts`     | Thorough Grok mode (`grok` — 4.5 + medium) |
+| `grok-rush.ts`     | Crisp Grok mode (`grok-rush` — build-0.1 + none, rush principles) |
+| `firecrawl-hook.ts`| Global `tool.call` hook + extra Firecrawl tools (affects **entire Amp**, both modes, subagents, etc.) |
 
 **Important**: `firecrawl-hook.ts` is global. Install it to get Firecrawl for Grok, GLM, built-in modes, subagents, and everything else. The model has no idea it is using Firecrawl.
 
-## What changed (Grok mode)
+## The two modes (your control)
 
-- Removed all the different "speed/quality" profiles (`grok-quick`, `grok-standard`, `grok-careful`, etc.)
-- Now there is **one single mode** only: `grok`
-- The prompt, tool list, structure, and code style are copied from the official GLM 5.2 plugin
-- Default reasoning effort set to `medium`
+| Mode        | Model              | Reasoning | Behavior                              | Best for |
+|-------------|--------------------|-----------|---------------------------------------|----------|
+| `grok`      | `xai/grok-4.5`     | `medium`  | Enhanced / thorough (plans, reads more, careful) | Ambiguous work, research, UI, bigger changes |
+| `grok-rush` | `xai/grok-build-0.1` | `none`  | Crisp rush style (one loop, minimal discovery, narrow verify) | Small well-defined edits, quick answers, low latency |
+
+The main `grok` prompt is deliberately **enhanced** (has `frame_the_task`, `plan_before_acting`, `codebase_discovery`, full frontend taste rules, etc.). That's why it can read a lot of files.
+
+`grok-rush` follows official rush-classic rules almost verbatim for the opposite behavior.
+
+You stay 100% on Grok models.
 
 ## Install / Update
 
@@ -41,14 +52,15 @@ Then reload plugins (command palette → `plugins: reload`).
 ## Usage
 
 ```bash
-amp --mode grok
+amp --mode grok          # thorough (4.5 + medium) — enhanced
+amp --mode grok-rush     # crisp (build-0.1 + none) — rush style
 ```
 
-You can still override effort:
+Override effort on either:
 
 ```bash
 amp --mode grok --effort low
-amp --mode grok --effort high
+amp --mode grok-rush --effort low
 ```
 
 ## Firecrawl Integration (Global & Transparent)
